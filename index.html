@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="style.css">
+</head>
+
 <body>
   <div id="player-shell" class="pill">
     <div id="title-bar" class="drag-region">
@@ -5,9 +11,9 @@
     </div>
 
     <div id="controls">
-      <button id="btn-prev" class="no-drag"></button>
-      <button id="btn-playpause" class="no-drag"></button>
-      <button id="btn-next" class="no-drag"></button>
+      <button id="btn-prev" class="no-drag">⏮</button>
+      <button id="btn-playpause" class="no-drag">▶</button>
+      <button id="btn-next" class="no-drag">⏭</button>
     </div>
 
     <div id="playlist-tab" class="no-drag">Playlist ▾</div>
@@ -16,4 +22,7 @@
   <div id="playlist-panel" class="collapsed"></div>
 
   <audio id="audio"></audio>
+
+  <script src="renderer.js"></script>
 </body>
+</html>
