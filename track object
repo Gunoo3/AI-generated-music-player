@@ -1,5 +1,0 @@
-{
-  id: crypto.randomUUID(),
-  filePath: "C:\\music\\track1.mp3",
-  title: "My Song.mp3"
-}
