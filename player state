@@ -1,0 +1,6 @@
+const state = {
+  playlist: [],        // array of Track
+  currentIndex: 0,     // index in playlist
+  isPlaying: false,    // play / pause
+  isListOpen: false    // collapsible list
+};
