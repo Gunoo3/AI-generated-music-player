@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aquarium After Hour</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div id="tank" class="overlay-tank">
+    <!-- SVG filter defs (water distortion) -->
+    <svg class="svgDefs" width="0" height="0" aria-hidden="true">
+      <filter id="waterDistort">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="2" result="noise">
+          <animate attributeName="baseFrequency" dur="8s" values="0.012 0.02;0.018 0.03;0.012 0.02" repeatCount="indefinite" />
+        </feTurbulence>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </svg>
+
+    <!-- Unified circular border frame -->
+    <div class="unified-border">
+      <!-- Left dock: pages (only one open at a time) -->
+      <section class="dock dock-left" aria-label="Pages">
+        <!-- PNG paths are configured in app.js (normal/pressed/active) -->
+        <button id="dockFishBtn" class="dockBtn" title="Fish collection">
+          <img id="dockFishIcon" class="dockIcon" alt="Fish page" />
+        </button>
+        <button id="dockBgBtn" class="dockBtn" title="Backgrounds">
+          <img id="dockBgIcon" class="dockIcon" alt="Background page" />
+        </button>
+        <button id="dockMusicBtn" class="dockBtn" title="Music list">
+          <img id="dockMusicIcon" class="dockIcon" alt="Music list page" />
+        </button>
+        <button id="dockInfoBtn" class="dockBtn" title="Info">
+          <img id="dockInfoIcon" class="dockIcon" alt="Info page" />
+        </button>
+        <button id="dockNoteBtn" class="dockBtn" title="Notes">
+          <img id="dockNoteIcon" class="dockIcon" alt="Notes page" />
+        </button>
+      </section>
+
+      <!-- Right visualizer -->
+      <section class="vizWrap" aria-label="Audio visualizer">
+        <canvas id="viz" width="36" height="240"></canvas>
+      </section>
+
+      <!-- Top tools (curved arc); close is separated to the right -->
+      <section class="arc arc-top" aria-label="Tools">
+        <div class="arc-top-tools">
+          <button id="feedBtn" class="toolBtn" title="Feed fish"><img id="feedIcon" class="toolImg" alt="Feed" /></button>
+          <button id="trashBtn" class="toolBtn" title="Remove fish"><img id="trashIcon" class="toolImg" alt="Trash" /></button>
+          <button id="spawnToggleBtn" class="toolBtn" title="Toggle spawn"><img id="spawnIcon" class="toolImg" alt="Spawn" /></button>
+        </div>
+        <button id="closeBtn" class="toolBtn closeToolBtn" title="Close app"><img id="closeIcon" class="toolImg" alt="Close" /></button>
+      </section>
+
+      <!-- Center: circular tank -->
+      <div class="tank-center">
+        <div class="tank-wrapper">
+          <div class="tank-border">
+            <div id="aquarium" class="aquarium">
+              <div class="tank-bg"></div>
+              <div id="tankContent" class="tank-content"></div>
+
+              <!-- In-tank overlays (pages). Only one visible at a time -->
+              <div id="tankOverlay" class="tankOverlay is-hidden">
+                <section id="overlayFish" class="overlayPage" data-page="fish" aria-label="Fish Collection">
+                  <h3 class="overlayTitle">Fish</h3>
+                  <div id="fishGrid" class="overlayGrid"></div>
+                </section>
+                <section id="overlayBg" class="overlayPage" data-page="bg" aria-label="Backgrounds">
+                  <h3 class="overlayTitle">Backgrounds</h3>
+                  <div id="bgGrid" class="overlayGrid"></div>
+                </section>
+                <section id="overlayMusic" class="overlayPage" data-page="music" aria-label="Music List">
+                  <h3 class="overlayTitle">Music</h3>
+                  <ol id="trackList" class="trackList"></ol>
+                </section>
+                <section id="overlayInfo" class="overlayPage overlayPage--info" data-page="info" aria-label="Info">
+                  <h3 class="overlayTitle">Info</h3>
+                  <div class="infoPanelWrap">
+                    <img id="infoPageImg" class="infoPageImg" src="assets/ui/info-page.png" alt="" />
+                  </div>
+                </section>
+                <section id="overlayNote" class="overlayPage overlayPage--note" data-page="note" aria-label="Notes">
+                  <h3 class="overlayTitle">Notes</h3>
+                  <div class="noteNotebook">
+                    <textarea id="noteEditor" class="noteEditor" rows="14" spellcheck="true" placeholder="Write here…"></textarea>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom music controls (curved inward) -->
+        <section class="arc arc-bottom" aria-label="Music controls">
+          <canvas id="seekArc" class="seekArc" width="320" height="248" aria-label="Timeline"></canvas>
+          <div class="musicStack">
+            <div class="musicBtns">
+              <button id="prevBtn" class="musicBtn" title="Previous"><img id="prevIcon" class="musicBtnImg" alt="" /></button>
+              <button id="playPauseBtn" class="musicBtn" title="Play/Pause"><img id="playPauseIcon" class="musicBtnImg" alt="" /></button>
+              <button id="nextBtn" class="musicBtn" title="Next"><img id="nextIcon" class="musicBtnImg" alt="" /></button>
+            </div>
+            <div class="musicTitleWrap">
+              <div class="nowTitleViewport">
+                <div id="nowTitleTrack" class="nowTitleTrack">
+                  <span id="nowTitle" class="nowTitleChunk"></span>
+                  <span id="nowTitleDup" class="nowTitleChunk nowTitleChunk--ghost" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <audio id="audio"></audio>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

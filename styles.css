@@ -1,0 +1,781 @@
+/* =========================
+   DESKTOP OVERLAY - Circular tank frame
+   NOTE: Window sizing is fixed in main.js.
+   To adjust UI size later, change:
+   - --tank-size
+   - --border-thickness
+   - --ui-scale
+   ========================= */
+
+:root{
+  --c-text: #ff72d5;
+  --c-neon2: #46f3ff;
+  --frame-border: 2px solid rgba(0,255,191,0.9);
+
+  --tank-size: 400px;
+  --border-thickness: 100px;
+  --ui-scale: 0.8; /* 20% smaller overall program */
+
+  /* Tank background is set by JS with this variable */
+  --tank-bg-image: none;
+
+  /* Border PNG */
+  --border-img: url('assets/border/tank-frame.png');
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  background: transparent;
+  color: var(--c-text);
+  /* 2000s-style font stack */
+  font-family: "Trebuchet MS","Tahoma","Verdana","Segoe UI",system-ui,sans-serif;
+  font-size: 18px; /* doubled base size */
+}
+
+.overlay-tank{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(var(--ui-scale));
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.overlay-tank *{ pointer-events:auto; }
+
+/* Border frame (draggable) */
+.unified-border{
+  position: relative;
+  width: calc(var(--tank-size) + var(--border-thickness) * 2.5);
+  height: calc(var(--tank-size) + var(--border-thickness) * 2.5);
+  border-radius: 50%;
+  background: var(--border-img) center/contain no-repeat;
+
+  overflow: visible;
+  -webkit-app-region: drag; /* Drag anywhere except no-drag elements */
+}
+
+.svgDefs{ position:absolute; width:0; height:0; }
+
+/* Left dock */
+.dock{
+  position:absolute;
+  left: 50px;
+  top: 50%;
+  transform: translateY(-50%);
+  display:flex;
+  flex-direction: column;
+  gap: 6px; /* tighter so 5 dock buttons fit comfortably */
+  z-index: 30;
+  -webkit-app-region: no-drag;
+}
+
+.dockBtn{
+  width: 70px;  /* ~60% larger than 44px */
+  height: 70px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.25);
+  cursor:pointer;
+  padding: 6px;
+  display:grid;
+  place-items:center;
+}
+
+.dockBtn.is-active{
+  border-color: rgba(70,243,255,0.8);
+  box-shadow: 0 0 14px rgba(70,243,255,0.25);
+}
+
+.dockIcon{ width:100%; height:100%; object-fit:contain; }
+
+/* Right visualizer */
+.vizWrap{
+  position:absolute;
+  right: 55px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 70px;
+  height: calc(var(--tank-size) * 0.8);
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.18);
+  display:grid;
+  place-items:center;
+  z-index: 30;
+  -webkit-app-region: no-drag;
+}
+
+#viz{ width: 36px; height: 100%; }
+
+/* Top arc tools */
+.arc{
+  position:absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  -webkit-app-region: no-drag;
+}
+
+.arc-top{
+  top: 50px;
+  display:flex;
+  flex-direction: row;
+  align-items:flex-end;
+  gap: 8px;
+  justify-content: center;
+}
+
+.arc-top-tools{
+  display:flex;
+  gap: 8px;
+  align-items:flex-end;
+}
+
+.arc-top-tools .toolBtn:nth-child(1){ transform: translateY(20px); }
+.arc-top-tools .toolBtn:nth-child(2){ transform: translateY(0px); }
+.arc-top-tools .toolBtn:nth-child(3){ transform: translateY(0px); }
+
+/* Close: ~20% smaller than other tool buttons, shifted right from the main group */
+.closeToolBtn{
+  width: 51px;
+  height: 51px;
+  padding: 4px;
+  margin-left: 36px;
+}
+
+.toolBtn{
+  width: 64px;  /* ~60% larger than original 40px */
+  height: 64px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.25);
+  cursor:pointer;
+  padding: 6px;
+  display:grid;
+  place-items:center;
+}
+
+.toolBtn.is-active{
+  border-color: rgba(70,243,255,0.8);
+  box-shadow: 0 0 14px rgba(70,243,255,0.25);
+}
+
+.toolImg{ width:100%; height:100%; object-fit:contain; }
+
+/* Tank center */
+.tank-center{
+  position:absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--tank-size);
+  height: var(--tank-size);
+  display:grid;
+  place-items:center;
+}
+
+.tank-wrapper{ width:100%; height:100%; }
+
+.tank-border{
+  width:100%;
+  height:100%;
+  border-radius: 50%;
+  padding: 12px;
+  background: rgba(0,0,0,0.25);
+  overflow:hidden;
+}
+
+.aquarium{
+  width:100%;
+  height:100%;
+  border-radius: 50%;
+  overflow:hidden;
+  position:relative;
+  -webkit-app-region: no-drag;
+}
+
+.tank-bg{
+  position:absolute;
+  inset:0;
+  border-radius: 50%;
+  background: var(--tank-bg-image), linear-gradient(180deg, rgba(22,79,83,0.25), rgba(38,6,126,0.35));
+  background-size: cover;
+  background-position: center;
+  filter: url(#waterDistort);
+  transform: scale(1.03);
+}
+
+.tank-content{
+  position:absolute;
+  inset:0;
+  border-radius: 50%;
+  overflow:hidden;
+  filter: url(#waterDistort);
+}
+
+/* When an overlay page is open, turn off wave filters for clarity */
+.overlay-open .tank-bg,
+.overlay-open .tank-content{
+  filter: none;
+}
+
+.tankOverlay{
+  position:absolute;
+  inset:0;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.62);
+  backdrop-filter: blur(10px);
+  display:none;
+  /* Default padding when closed (unused); when open, body.overlay-open tightens inset */
+  padding: 14px;
+  z-index: 40;
+}
+
+/* Pull overlay content inward so text/images stay inside the circular tank border */
+body.overlay-open .tankOverlay{
+  padding: 28px 32px 34px;
+  box-sizing: border-box;
+}
+
+/* Let Info + Music ignore the inset safety border and use full tank area */
+body.overlay-open .tankOverlay:has(#overlayInfo.is-active),
+body.overlay-open .tankOverlay:has(#overlayMusic.is-active){
+  padding: 0;
+}
+
+.tankOverlay.is-visible{ display:block; }
+.tankOverlay.is-hidden{ display:none; }
+
+.overlayPage{
+  display:none;
+  height:100%;
+}
+.overlayPage.is-active{
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Shrink page content to 80% (20% smaller) — transform does not affect layout box */
+  transform: scale(0.8);
+  transform-origin: center center;
+}
+
+/* Override the shrink/inset behavior for Info and Music only */
+#overlayInfo.overlayPage.is-active,
+#overlayMusic.overlayPage.is-active{
+  transform: none;
+  transform-origin: center center;
+}
+
+.overlayTitle{
+  margin:0;
+  font-size: 22px; /* larger 2000s-style label */
+}
+
+.overlayGrid{
+  flex:1;
+  overflow-y:auto;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-right: 6px;
+}
+
+.overlayCard{
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  padding: 10px;
+  cursor:pointer;
+}
+
+.overlayCard.is-off img{
+  filter: grayscale(1) brightness(0.2);
+}
+
+.overlayThumb{
+  width:100%;
+  height: 72px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: rgba(0,0,0,0.25);
+}
+
+.overlayCardTitle{
+  margin-top: 8px;
+  font-size: 18px;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 8px;
+}
+
+.overlayGlow{
+  border-color: rgba(70,243,255,0.8);
+  box-shadow: 0 0 16px rgba(70,243,255,0.25);
+}
+
+.overlayPage--info .infoPanelWrap{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  min-height: 0;
+}
+
+#overlayInfo .overlayTitle{
+  display: none;
+}
+
+.infoPageImg{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  margin: 0;
+}
+
+/* Music page: use more vertical space for the list */
+#overlayMusic.overlayPage.is-active{
+  padding: 10px 16px 18px;
+  gap: 6px;
+}
+
+#overlayMusic .trackList{
+  height: 100%;
+  max-height: none;
+  padding-left: 22px;
+  padding-right: 8px;
+}
+
+/* Notebook paper aesthetic on Notes page only */
+.overlayPage--note .noteNotebook{
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px 12px 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background-color: rgba(255,255,255,0.04);
+  background-image:
+    linear-gradient(90deg, rgba(255,120,140,0.55) 0, rgba(255,120,140,0.55) 2px, transparent 2px),
+    repeating-linear-gradient(
+      transparent 0,
+      transparent 33px,
+      rgba(70,243,255,0.14) 34px
+    );
+  background-size: 100% 100%, 100% 34px;
+  background-position: 24px 0, 0 8px;
+  background-repeat: no-repeat, repeat;
+}
+
+.overlayPage--note{
+  min-height: 0;
+}
+
+.noteEditor{
+  flex:1;
+  min-height: 120px;
+  width: 100%;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 22px;
+  line-height: 34px; /* match .noteNotebook ruled spacing */
+  color: var(--c-text);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  outline: none;
+}
+
+/* Bottom arc music — move whole timeline bar up/down vs tank (pairs with cy/r in app.js drawSeekArc) */
+.arc-bottom{
+  /* Less negative = bar sits higher (closer to tank). More negative = lower on screen. */
+  bottom: -135px;
+  width: calc(var(--tank-size) * 1.05);
+  height: 248px; /* room for seek arc + transport row (see .musicBtns margin-top) */
+  pointer-events:none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+.arc-bottom > *{ pointer-events:auto; }
+
+/* Seek canvas overlaps the lower tank; clicks were blocked there. Pass through while feeding/removing. */
+#tank.tank-tool-mode .seekArc{
+  pointer-events: none;
+}
+
+.seekArc{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Column: buttons then title — flow order prevents overlap */
+.musicStack{
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 30px;
+  pointer-events: none;
+}
+.musicStack .musicBtns,
+.musicStack .musicTitleWrap{
+  pointer-events: auto;
+}
+
+.musicBtns{
+  display:flex;
+  align-items: flex-start; /* margin-top on middle shifts it down; row height includes it */
+  gap: 10px;
+  justify-content: center;
+  /* Move prev/play/next down vs timeline (increase to push controls lower) */
+  margin-top: 0px;
+}
+
+.musicBtn{
+  width: 64px;  /* match other buttons */
+  height: 64px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(0,0,0,0.25);
+  color: var(--c-text);
+  cursor:pointer;
+}
+
+/* Curve: translateX only (no translateY). Middle sits lower via margin-top so flex row height
+   grows — title never shares vertical space with painted buttons. */
+.musicBtn:nth-child(1){ transform: translateX(12px); margin-top: 2px; }
+.musicBtn:nth-child(2){ margin-top: 10px; }
+.musicBtn:nth-child(3){ transform: translateX(-12px); margin-top: 2px; }
+
+.musicBtnImg{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  display: block;
+}
+
+.musicTitleWrap{
+  position: relative;
+  width: min(92%, 260px);
+  max-width: 260px;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: -20px; /* extra separation after measured btn row height */
+}
+
+/* Current track: only scrolls when wider than viewport (see app.js updateNowPlayingTitle) */
+.nowTitleViewport{
+  overflow: hidden;
+  width: 100%;
+  min-height: 1.4em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 6%, #000 94%, transparent 100%);
+}
+
+.nowTitleTrack{
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  white-space: nowrap;
+  transform: translateX(0);
+}
+
+.nowTitleTrack.is-marquee{
+  justify-content: flex-start;
+  animation: nowTitleMarquee linear infinite;
+  animation-duration: 20s;
+  /* duration overridden in JS from text width */
+}
+
+.musicTitleWrap:has(.nowTitleTrack.is-marquee) .nowTitleViewport{
+  justify-content: flex-start;
+}
+
+@keyframes nowTitleMarquee{
+  0%{ transform: translateX(0); }
+  100%{ transform: translateX(-50%); }
+}
+
+.nowTitleChunk{
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--c-text);
+  flex-shrink: 0;
+  padding-right: 2.25rem; /* same on both copies so each half of the track matches for -50% loop */
+}
+
+.nowTitleChunk--ghost{
+  /* duplicate copy; same metrics as first chunk */
+  opacity: 1;
+}
+
+
+.nowTitleTrack:not(.is-marquee) .nowTitleChunk{
+  padding-right: 0;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .nowTitleTrack.is-marquee{
+    animation: none;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+}
+
+.trackList{
+  margin:0;
+  padding-left: 18px;
+  flex:1;
+  overflow-y:auto;
+}
+
+.trackList li{
+  padding: 8px 0;
+  cursor:pointer;
+  font-size: 22px;
+}
+
+.trackList li.is-active{
+  color: var(--c-neon2);
+  text-shadow: 0 0 8px rgba(70,243,255,0.4);
+}
+
+/* Fish + particles */
+.fish{
+  position:absolute;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.35));
+  opacity: 0.95;
+  cursor: grab;
+  user-select:none;
+  transform-origin: 0 0; /* matches translate + scale from JS */
+  will-change: transform;
+}
+
+.fish:active{ cursor: grabbing; }
+
+.bubble{
+  position:absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(70,243,255,0.4));
+  pointer-events:none;
+}
+
+.flake{
+  position:absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events:none;
+  background: url('assets/flakes/food.png') center/contain no-repeat,
+              radial-gradient(circle, rgba(255,255,200,0.9), rgba(255,200,100,0.6));
+  border-radius: 2px;
+}
+
+/* Cursor modes — place PNGs at these paths (hotspot ~center of 32×32) */
+.aquarium.is-feeding{ cursor: url('assets/cursors/feed.png') 16 16, crosshair; }
+.aquarium.is-trash{ cursor: url('assets/cursors/trash.png') 16 16, not-allowed; }
+
+/* Grid for panels */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  padding: 10px;
+}
+
+.cardThumb {
+  width: 100%;
+  height: 50px;
+  object-fit: contain;
+  margin-bottom: 6px;
+  border-radius: 6px;
+}
+
+.cardTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin: 0 0 30px;
+}
+
+.cardToggle {
+  font-size: 11px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.3);
+  color: var(--c-text);
+  cursor: pointer;
+}
+
+.card.is-active .cardToggle {
+  background: rgba(70,243,255,0.2);
+  border-color: var(--c-neon2);
+}
+
+.thumb {
+  height: 60px;
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.bgThumb {
+  background-size: cover;
+  background-position: center;
+}
+
+/* Music bar (curved around bottom, no text overlap) */
+.music-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  -webkit-app-region: no-drag;
+  width: 100%;
+}
+
+.music-info {
+  max-width: 180px;
+  overflow: hidden;
+  text-align: center;
+  order: 1;
+}
+
+.music-controls {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  order: 2;
+}
+
+.music-controls button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  color: var(--c-text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 180ms ease;
+}
+
+.music-controls button:nth-child(1) { transform: translateY(2px); }
+.music-controls button:nth-child(2) { transform: translateY(-2px); }
+.music-controls button:nth-child(3) { transform: translateY(2px); }
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  width: 200%;
+  font-size: 9px;
+  order: 3;
+}
+
+.timeline input[type="range"] {
+  flex: 2;
+  accent-color: var(--c-neon2);
+}
+
+.musicListToggle {
+  position: absolute;
+  right: 4px;
+  bottom: 50%;
+  transform: translateY(50%);
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  background: rgba(0,0,0,0.3);
+  color: var(--c-text);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.trackListWrap {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 250ms ease;
+  width: 100%;
+  max-width: calc(var(--tank-size) * 0.85);
+}
+
+.trackListWrap.is-expanded {
+  max-height: 200px;
+}
+
+.trackList {
+  margin: 0;
+  padding: 8px 16px;
+  list-style: none;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  max-height: 180px;
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+}
+
+.trackList li {
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.trackList li:hover {
+  color: var(--c-neon2);
+}
+
+.trackList li.is-active {
+  color: var(--c-neon2);
+  text-shadow: 0 0 8px rgba(70,243,255,0.4);
+}
+
+/* Cursor modes */
+.aquarium.is-feeding {
+  cursor: url('assets/cursors/feed.png') 8 8, crosshair;
+}
+
+.aquarium.is-trash {
+  cursor: url('assets/cursors/trash.png') 8 8, not-allowed;
+}

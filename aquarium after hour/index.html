@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aquarium After Hour</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- TANK WRAPPER: the whole page is the tank border -->
+  <div id="tank" class="tank">
+    <!-- TOP-RIGHT COLLAPSIBLE HORIZONTAL NAV -->
+    <header class="topbar">
+      <button id="navToggle" class="navToggle" aria-expanded="false" aria-controls="nav">
+        <!-- CHANGE ICON IMAGE HERE (or use text) -->
+        ☰
+      </button>
+
+      <nav id="nav" class="nav is-collapsed" aria-label="Pages">
+        <!--
+          ICONS: Replace emoji with <img> icons if you want.
+          CHANGE ICON IMAGES HERE.
+        -->
+        <button class="navItem is-active" data-page="home" title="Tank">
+          <span class="navIcon">🐟</span>
+        </button>
+        <button class="navItem" data-page="backgrounds" title="Backgrounds">
+          <span class="navIcon">🖼️</span>
+        </button>
+        <button class="navItem" data-page="fish" title="Fish Collection">
+          <span class="navIcon">🧾</span>
+        </button>
+        <button class="navItem" data-page="music" title="Music">
+          <span class="navIcon">🎵</span>
+        </button>
+        <button class="navItem" data-page="about" title="About">
+          <span class="navIcon">ⓘ</span>
+        </button>
+      </nav>
+    </header>
+
+    <main class="pages">
+      <!-- PAGE 1: MAIN TANK -->
+      <section class="page is-active" data-page="home" aria-label="Main Tank">
+        <div class="pageFrame">
+          <h1 class="pageTitle">Aquarium After Hour</h1>
+          <p class="pageHint">Top-right menu → switch pages. Background + fish persist.</p>
+
+          <!-- Aquarium viewport -->
+          <div id="aquarium" class="aquarium" aria-label="Aquarium">
+            <!-- Fish are spawned here by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2: BACKGROUND SELECTION -->
+      <section class="page" data-page="backgrounds" aria-label="Background Selection">
+        <div class="pageFrame">
+          <h2 class="pageTitle">Backgrounds</h2>
+          <p class="pageHint">Pick a tank background for the main page.</p>
+
+          <div id="bgGrid" class="grid"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: FISH COLLECTION -->
+      <section class="page" data-page="fish" aria-label="Fish Collection">
+        <div class="pageFrame">
+          <h2 class="pageTitle">Fish Collection</h2>
+          <p class="pageHint">Adjust how many of each fish appear in the tank.</p>
+
+          <div id="fishGrid" class="grid"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: MUSIC CATALOGUE -->
+      <section class="page" data-page="music" aria-label="Music Catalogue">
+        <div class="pageFrame">
+          <h2 class="pageTitle">Music</h2>
+
+          <div class="player">
+            <div class="nowPlaying">
+              <div class="label">Now Playing</div>
+              <div id="nowTitle" class="value">—</div>
+            </div>
+
+            <div class="controls">
+              <button id="prevBtn">⏮</button>
+              <button id="playPauseBtn">▶</button>
+              <button id="nextBtn">⏭</button>
+            </div>
+
+            <div class="timeline">
+              <span id="timeCurrent">0:00</span>
+              <input id="seek" type="range" min="0" max="100" value="0" />
+              <span id="timeTotal">0:00</span>
+            </div>
+
+            <ol id="trackList" class="trackList"></ol>
+          </div>
+
+          <!-- Audio element used by JS -->
+          <audio id="audio"></audio>
+        </div>
+      </section>
+
+      <!-- PAGE 5: ABOUT / CREDITS -->
+      <section class="page" data-page="about" aria-label="About">
+        <div class="pageFrame">
+          <h2 class="pageTitle">About</h2>
+          <p class="pageHint">
+            Creator: <strong>Your Name</strong><br />
+            Credits: music, icons, inspiration, etc.
+          </p>
+
+          <div class="aboutCard">
+            <p>
+              Replace this with your story, thesis context, and credits list.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

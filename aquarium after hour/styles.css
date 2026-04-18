@@ -1,0 +1,295 @@
+/* =========================
+   THEME: CHANGE COLORS HERE
+   ========================= */
+   :root{
+    /* CHANGE THE VAPORWAVE PALETTE HERE */
+    --c-bg: #0b0820;
+    --c-neon1: #ff4fd8; /* hot pink */
+    --c-neon2: #46f3ff; /* cyan */
+    --c-neon3: #a98bff; /* purple */
+    --c-text: #f6f2ff;
+  
+    /* CHANGE BORDERS / CORNERS HERE */
+    --frame-radius: 18px;
+    --frame-border: 2px solid rgba(255,255,255,0.18);
+  
+    /* Background image is set by JS (or you can hardcode here) */
+    --tank-bg-image: none;
+  }
+  
+  /* Page is the tank */
+  body{
+    margin:0;
+    min-height:100vh;
+    color: var(--c-text);
+    font-family: ui-sans-serif, system-ui, Segoe UI, Arial;
+    background: radial-gradient(1200px 700px at 20% 20%, rgba(255,79,216,0.18), transparent 60%),
+                radial-gradient(900px 600px at 80% 30%, rgba(70,243,255,0.16), transparent 55%),
+                linear-gradient(180deg, #070614, var(--c-bg));
+  }
+  
+  /* TANK BORDER: CHANGE LOOK HERE */
+  .tank{
+    position: relative;
+    min-height: 100vh;
+    padding: 18px;
+    box-sizing: border-box;
+  
+    border: var(--frame-border);
+    border-radius: var(--frame-radius);
+  
+    /* 2000s “gloss” vibe */
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), transparent 25%),
+      var(--tank-bg-image),
+      rgba(0,0,0,0.12);
+    background-size: cover;
+    background-position: center;
+    backdrop-filter: blur(6px);
+  }
+  
+  /* Top-right nav */
+  .topbar{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 50;
+  }
+  
+  /* CHANGE NAV BUTTON STYLE HERE */
+  .navToggle{
+    border: var(--frame-border);
+    background: rgba(0,0,0,0.25);
+    color: var(--c-text);
+    border-radius: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+  }
+  
+  /* Collapsible horizontal bar */
+  .nav{
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border: var(--frame-border);
+    border-radius: 14px;
+    background: rgba(0,0,0,0.30);
+    backdrop-filter: blur(10px);
+    transform-origin: top right;
+    transition: transform 180ms ease, opacity 180ms ease, width 180ms ease;
+  }
+  
+  .nav.is-collapsed{
+    transform: scaleX(0);
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  .navItem{
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.06);
+    color: var(--c-text);
+    cursor: pointer;
+  }
+  
+  .navItem.is-active{
+    /* ACTIVE ICON “LIGHT UP”: CHANGE GLOW HERE */
+    border-color: rgba(70,243,255,0.65);
+    box-shadow:
+      0 0 0 2px rgba(70,243,255,0.15),
+      0 0 18px rgba(70,243,255,0.30),
+      0 0 26px rgba(255,79,216,0.20);
+  }
+  
+  .navIcon{
+    font-size: 18px;
+  }
+  
+  /* Pages */
+  .pages{
+    max-width: 1100px;
+    margin: 64px auto 0;
+  }
+  
+  .page{
+    display: none;
+  }
+  
+  .page.is-active{
+    display: block;
+  }
+  
+  .pageFrame{
+    border: var(--frame-border);
+    border-radius: var(--frame-radius);
+    background: rgba(0,0,0,0.28);
+    backdrop-filter: blur(10px);
+    padding: 18px;
+  }
+  
+  .pageTitle{
+    margin: 0 0 8px;
+    letter-spacing: 0.5px;
+  }
+  
+  .pageHint{
+    margin: 0 0 14px;
+    opacity: 0.85;
+  }
+  
+  /* Aquarium viewport */
+  .aquarium{
+    position: relative;
+    height: min(66vh, 520px);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+  
+    /* subtle “water” gradient */
+    background: linear-gradient(180deg, rgba(70,243,255,0.10), rgba(169,139,255,0.08));
+  }
+  
+  /* Fish elements */
+  .fish{
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    /* CHANGE FISH IMAGE HERE (if you use images) */
+    background: radial-gradient(circle at 30% 30%, rgba(255,79,216,0.8), rgba(70,243,255,0.35));
+    border-radius: 999px;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.35));
+    opacity: 0.95;
+  }
+  
+  /* 2000s “sticker” border */
+  .fish::after{
+    content:"";
+    position:absolute;
+    inset: -2px;
+    border-radius: 999px;
+    border: 2px solid rgba(255,255,255,0.22);
+    pointer-events:none;
+  }
+  
+  /* Grids for backgrounds + fish collection */
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  
+  .card{
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    padding: 12px;
+  }
+  
+  .thumb{
+    height: 90px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 10px;
+  }
+  
+  .cardTitle{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0 0 10px;
+  }
+  
+  .small{
+    opacity: 0.8;
+    font-size: 12px;
+  }
+  
+  .row{
+    display:flex;
+    gap: 8px;
+    align-items:center;
+  }
+  
+  .row button{
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(0,0,0,0.22);
+    color: var(--c-text);
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
+  
+  /* Music player */
+  .player{
+    display:grid;
+    gap: 12px;
+  }
+  
+  .nowPlaying{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    padding: 12px;
+  }
+  
+  .controls{
+    display:flex;
+    gap: 10px;
+  }
+  
+  .controls button{
+    flex: 0 0 auto;
+    width: 62px;
+    height: 44px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background: rgba(0,0,0,0.25);
+    color: var(--c-text);
+    cursor: pointer;
+  }
+  
+  .timeline{
+    display:grid;
+    grid-template-columns: 52px 1fr 52px;
+    gap: 10px;
+    align-items:center;
+    opacity: 0.95;
+  }
+  
+  .trackList{
+    margin: 0;
+    padding-left: 18px;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    padding: 12px 12px 12px 32px;
+  }
+  
+  .trackList li{
+    padding: 6px 0;
+    cursor: pointer;
+  }
+  
+  .trackList li.is-active{
+    color: var(--c-neon2);
+    text-shadow: 0 0 10px rgba(70,243,255,0.35);
+  }
+  
+  .aboutCard{
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    padding: 12px;
+  }
